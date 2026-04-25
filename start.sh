@@ -58,14 +58,10 @@ if [ "$RESET" -eq 1 ]; then
   rm -rf "$ROOT/.venv" "$ROOT/frontend/node_modules" "$ROOT/kb_store"
 fi
 
-# ---- backend setup ----------------------------------------------------------
-if [ ! -d "$ROOT/.venv" ]; then
-  say "Creating Python venv..."
-  python3 -m venv "$ROOT/.venv"
-fi
-
-# shellcheck disable=SC1091
-source "$ROOT/.venv/bin/activate"
+# ---- backend setup (conda) --------------------------------------------------
+say "Activating conda env 'agentic_app'..."
+source /home/ubuntu/miniconda3/etc/profile.d/conda.sh
+conda activate agentic_app
 
 if ! python -c "import fastapi, langgraph" >/dev/null 2>&1; then
   say "Installing Python deps (this may take a minute)..."
@@ -101,15 +97,18 @@ BACKEND_LOG="$LOG_DIR/backend.log"
 FRONTEND_LOG="$LOG_DIR/frontend.log"
 : > "$BACKEND_LOG"; : > "$FRONTEND_LOG"
 
+CONDA_PYTHON="/home/ubuntu/miniconda3/envs/agentic_app/bin/python"
+CONDA_UVICORN="/home/ubuntu/miniconda3/envs/agentic_app/bin/uvicorn"
+
 say "Starting backend (FastAPI :8000)..."
-( cd "$ROOT" && exec uvicorn backend.main:app \
-    --host 127.0.0.1 --port 8000 --log-level info \
+( cd "$ROOT" && exec "$CONDA_UVICORN" backend.main:app \
+    --host 0.0.0.0 --port 8000 --log-level info \
     >"$BACKEND_LOG" 2>&1 ) &
 BACKEND_PID=$!
 
 say "Starting frontend (Vite :5173)..."
 ( cd "$ROOT/frontend" && exec npm run dev -- \
-    --host 127.0.0.1 --port 5173 \
+    --host 0.0.0.0 --port 5173 \
     >"$FRONTEND_LOG" 2>&1 ) &
 FRONTEND_PID=$!
 
