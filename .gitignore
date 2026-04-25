@@ -1,0 +1,40 @@
+# Secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Vector store
+kb_store/
+*.sqlite3
+*.duckdb
+
+# Node / Vue
+node_modules/
+dist/
+.vite/
+*.log
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Outputs
+final_package*.json
+*.csv
+.logs/
