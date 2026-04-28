@@ -33,11 +33,14 @@ CHECKPOINT_PATH = ROOT / ".rag_index_checkpoint.json"
 FORCE_RESTART = os.getenv("FORCE_RESTART", "0") == "1"
 AUTO_RECREATE_COLLECTION = os.getenv("AUTO_RECREATE_COLLECTION", "0") == "1"
 COLLECTION_SUFFIX = os.getenv("COLLECTION_SUFFIX", "").strip()
+# Index subset: all | business | technical (default: all).
+INDEX_KB = os.getenv("INDEX_KB", "all").strip().lower()
 
 BUSINESS_COLLECTION = "business_collection"
 TECHNICAL_COLLECTION = "technical_collection"
 EXCLUDED_FILES = {
     (RAW_DIR / "business_kb" / "README.md").resolve(),
+    (RAW_DIR / "technical_kb" / "README.md").resolve()
 }
 
 
@@ -58,6 +61,18 @@ def infer_kb_type(path: Path) -> str:
         "Cannot infer kb type from path: "
         f"{path}. Expected folder names like business/business_kb or "
         "technical/technical_kb."
+    )
+
+
+def filter_md_by_index_kb(paths: list[Path]) -> list[Path]:
+    if INDEX_KB in ("", "all"):
+        return paths
+    if INDEX_KB == "business":
+        return [p for p in paths if infer_kb_type(p) == "business"]
+    if INDEX_KB == "technical":
+        return [p for p in paths if infer_kb_type(p) == "technical"]
+    raise ValueError(
+        f"Invalid INDEX_KB={INDEX_KB!r}. Use all, business, or technical."
     )
 
 
@@ -291,6 +306,7 @@ def main() -> None:
     client = MilvusClient(uri=MILVUS_URI)
     embedder = SentenceTransformer(EMBED_MODEL)
     print(f"Using embedding model: {EMBED_MODEL}")
+    print(f"INDEX_KB={INDEX_KB} (subset of markdown files to index)")
     if EMBED_TRUNCATE_DIM > 0:
         print(f"Using truncate dim: {EMBED_TRUNCATE_DIM}")
 
@@ -308,10 +324,14 @@ def main() -> None:
     ensure_collection(client, business_collection_name, dim)
     ensure_collection(client, technical_collection_name, dim)
 
-    md_files = list(iter_markdown_files())
+    all_md = list(iter_markdown_files())
+    md_files = filter_md_by_index_kb(all_md)
     total_files = len(md_files)
     if total_files == 0:
-        print(f"No markdown files found under: {RAW_DIR}")
+        print(
+            f"No markdown files to index under: {RAW_DIR} "
+            f"(INDEX_KB={INDEX_KB}, scanned={len(all_md)} md files)."
+        )
         return
 
     state = load_checkpoint(total_files=total_files, checkpoint_path=checkpoint_path)

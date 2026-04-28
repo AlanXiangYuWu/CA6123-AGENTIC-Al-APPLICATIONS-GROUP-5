@@ -20,12 +20,12 @@ export async function runOnce(userIdea) {
   return r.json()
 }
 
-export function streamRun(userIdea, handlers) {
+export function streamRun(userIdea, handlers, threadId = '') {
   const proto = location.protocol === 'https:' ? 'wss' : 'ws'
   const url = `${proto}://${location.host}/api/ws/run`
   const ws = new WebSocket(url)
 
-  ws.onopen = () => ws.send(JSON.stringify({ user_idea: userIdea }))
+  ws.onopen = () => ws.send(JSON.stringify({ user_idea: userIdea, thread_id: threadId || undefined }))
   ws.onmessage = (ev) => {
     const msg = JSON.parse(ev.data)
     handlers.onEvent?.(msg)

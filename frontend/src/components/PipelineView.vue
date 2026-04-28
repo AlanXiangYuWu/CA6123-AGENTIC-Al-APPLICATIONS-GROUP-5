@@ -2,7 +2,9 @@
 defineProps({
   trace: { type: Array, default: () => [] },
   running: { type: String, default: '' },
+  activeAgent: { type: String, default: 'customer' },
 })
+const emit = defineEmits(['select'])
 
 const NODES = [
   { id: 'customer', label: 'Customer' },
@@ -27,8 +29,14 @@ function statusOf(id, trace, running) {
       v-for="n in NODES"
       :key="n.id"
       class="node"
-      :class="statusOf(n.id, trace, running)"
+      :class="[statusOf(n.id, trace, running), { active: activeAgent === n.id, clickable: true }]"
+      role="button"
+      tabindex="0"
+      @click="emit('select', n.id)"
+      @keydown.enter.prevent="emit('select', n.id)"
     >
+      <div v-if="activeAgent === n.id" class="node-viewing-badge">VIEWING</div>
+      <div v-if="running === n.id" class="node-running-badge">RUNNING</div>
       <div class="node-dot" />
       {{ n.label }}
     </div>

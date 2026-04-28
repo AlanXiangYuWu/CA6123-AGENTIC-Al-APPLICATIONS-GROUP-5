@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import uuid
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from langchain_core.messages import HumanMessage
@@ -21,6 +22,33 @@ from backend.core.state import initial_state
 from backend.guardrails.injection import detect_prompt_injection
 
 router = APIRouter()
+THREAD_STATE_CACHE: dict[str, dict] = {}
+
+
+def _build_input_state(app: Any, config: dict, user_idea: str) -> dict:
+    """Append a new user message for existing threads; initialize otherwise."""
+    thread_id = str(config.get("configurable", {}).get("thread_id", ""))
+    try:
+        snapshot = app.get_state(config)
+        values = getattr(snapshot, "values", None)
+    except Exception:  # noqa: BLE001
+        values = None
+
+    cached = THREAD_STATE_CACHE.get(thread_id)
+    if (not isinstance(values, dict) or not values) and isinstance(cached, dict):
+        values = cached
+
+    # New thread or no checkpoint yet.
+    if not isinstance(values, dict) or not values:
+        return initial_state(user_idea)
+
+    # Existing thread: only send a delta message so prior state is preserved.
+    return {"messages": [HumanMessage(content=user_idea)]}
+
+
+def _cache_thread_state(thread_id: str, state_values: Any) -> None:
+    if isinstance(state_values, dict) and state_values:
+        THREAD_STATE_CACHE[thread_id] = state_values
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -43,7 +71,9 @@ async def run_pipeline(req: RunRequest) -> RunResponse:
     thread_id = req.thread_id or str(uuid.uuid4())
     config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 50}
     app = get_app()
-    final = await asyncio.to_thread(app.invoke, initial_state(req.user_idea), config)
+    state = _build_input_state(app, config, req.user_idea)
+    final = await asyncio.to_thread(app.invoke, state, config)
+    _cache_thread_state(thread_id, final)
 
     return RunResponse(
         thread_id=thread_id,
@@ -80,7 +110,7 @@ async def ws_run(ws: WebSocket) -> None:
     """Streaming pipeline run.
 
     Client -> server (first message): {"user_idea": "...", "thread_id": "..."}
-    Server -> client: stream of {"event": "node_start"|"node_done"|"final"|"error", ...}
+    Server -> client: stream of {"event": "node_done"|"node_waiting_input"|"final"|"error", ...}
     """
     await ws.accept()
     try:
@@ -106,7 +136,7 @@ async def ws_run(ws: WebSocket) -> None:
 
         app = get_app()
         config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 50}
-        state = initial_state(user_idea)
+        state = _build_input_state(app, config, user_idea)
 
         # Stream node updates as they complete.
         loop = asyncio.get_running_loop()
@@ -117,16 +147,25 @@ async def ws_run(ws: WebSocket) -> None:
                 for chunk in app.stream(state, config, stream_mode="updates"):
                     # chunk = {"<node_name>": {<state diff>}}
                     for node_name, diff in chunk.items():
+                        safe_diff = _diff_node_update(diff or {})
+                        event_name = "node_done"
+                        if (
+                            node_name == "customer"
+                            and isinstance(safe_diff.get("project_brief"), dict)
+                            and safe_diff["project_brief"].get("status") == "needs_clarification"
+                        ):
+                            event_name = "node_waiting_input"
                         loop.call_soon_threadsafe(
                             queue.put_nowait,
                             {
-                                "event": "node_done",
+                                "event": event_name,
                                 "node": node_name,
-                                "diff": _diff_node_update(diff or {}),
+                                "diff": safe_diff,
                             },
                         )
                 # Final snapshot
                 snapshot = app.get_state(config).values
+                _cache_thread_state(thread_id, snapshot)
                 loop.call_soon_threadsafe(
                     queue.put_nowait,
                     {"event": "final", "state": _diff_node_update(snapshot)},

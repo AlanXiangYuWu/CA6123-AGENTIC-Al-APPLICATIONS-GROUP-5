@@ -1,0 +1,35 @@
+{
+  "product_name": "TBD",
+  "one_sentence_summary": "TBD",
+  "target_users": [
+    "TBD"
+  ],
+  "user_scenario": "TBD",
+  "core_problem": "TBD",
+  "proposed_solution": "TBD",
+  "must_have_features": [
+    "TBD"
+  ],
+  "nice_to_have_features": [
+    "TBD"
+  ],
+  "platform": "TBD",
+  "business_model": "TBD",
+  "constraints": {
+    "budget": "TBD",
+    "timeline": "TBD",
+    "region": "TBD",
+    "compliance": [
+      "TBD"
+    ]
+  },
+  "success_criteria": [
+    "TBD"
+  ],
+  "assumptions": [
+    "TBD"
+  ],
+  "open_questions": [
+    "TBD"
+  ]
+}

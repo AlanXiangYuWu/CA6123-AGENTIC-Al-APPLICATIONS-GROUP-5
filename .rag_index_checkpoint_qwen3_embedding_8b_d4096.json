@@ -19,11 +19,12 @@
     "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/06_qa_checklists/017_prd_review_checklist.md",
     "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/06_qa_checklists/018_acceptance_test_template.md",
     "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/07_delivery_ops/019_pitch_deck_template.md",
-    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/07_delivery_ops/020_cold_start_playbook.md"
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/07_delivery_ops/020_cold_start_playbook.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/technical_kb/01_tech_stack/001_frontend_react_vue.md"
   ],
   "business_files": 20,
-  "technical_files": 0,
-  "total_chunks": 416,
+  "technical_files": 1,
+  "total_chunks": 440,
   "skipped_empty": 0,
   "total_files": 20,
   "embed_model": "Qwen/Qwen3-Embedding-8B",
