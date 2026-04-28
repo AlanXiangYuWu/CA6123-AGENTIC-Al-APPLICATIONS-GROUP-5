@@ -19,8 +19,11 @@ def orchestrator_router(state: ProjectState) -> RouteTarget:
         return "delivery" if not state.get("final_package") else "__end__"
 
     # 5.8 Task Plan constraints (linear gating)
-    if not state.get("project_brief"):
+    brief = state.get("project_brief")
+    if not brief:
         return "customer"
+    if isinstance(brief, dict) and brief.get("status") == "needs_clarification":
+        return "__end__"
     if not state.get("research_report"):
         return "research"
     if not state.get("prd"):

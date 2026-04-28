@@ -46,6 +46,8 @@ done
 command -v python3 >/dev/null || { err "python3 not found"; exit 1; }
 command -v node    >/dev/null || { err "node not found (install Node.js >= 18)"; exit 1; }
 command -v npm     >/dev/null || { err "npm not found"; exit 1; }
+command -v curl    >/dev/null || { err "curl not found"; exit 1; }
+command -v lsof    >/dev/null || { err "lsof not found (install with: sudo apt install lsof)"; exit 1; }
 
 if [ ! -f "$ROOT/.env" ]; then
   err ".env missing. Copy .env.example to .env and set GOOGLE_API_KEY first."
@@ -58,15 +60,40 @@ if [ "$RESET" -eq 1 ]; then
   rm -rf "$ROOT/.venv" "$ROOT/frontend/node_modules" "$ROOT/kb_store"
 fi
 
-# ---- backend setup (conda) --------------------------------------------------
-say "Activating conda env 'agentic_app'..."
-source /home/ubuntu/miniconda3/etc/profile.d/conda.sh
-conda activate agentic_app
+# ---- backend setup (auto: conda env or venv) --------------------------------
+PYTHON_CMD=""
+PIP_CMD=""
 
-if ! python -c "import fastapi, langgraph" >/dev/null 2>&1; then
+if command -v conda >/dev/null 2>&1; then
+  CONDA_BASE="$(conda info --base 2>/dev/null || true)"
+  if [ -n "$CONDA_BASE" ] && [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+    # shellcheck disable=SC1090
+    source "$CONDA_BASE/etc/profile.d/conda.sh"
+    if conda env list | awk '{print $1}' | grep -qx "agentic_app"; then
+      say "Using conda env 'agentic_app'..."
+      conda activate agentic_app
+      PYTHON_CMD="$(command -v python)"
+      PIP_CMD="$(command -v pip)"
+    fi
+  fi
+fi
+
+if [ -z "$PYTHON_CMD" ] || [ -z "$PIP_CMD" ]; then
+  if [ ! -d "$ROOT/.venv" ]; then
+    say "Creating Python venv..."
+    python3 -m venv "$ROOT/.venv"
+  fi
+  # shellcheck disable=SC1091
+  source "$ROOT/.venv/bin/activate"
+  PYTHON_CMD="$(command -v python)"
+  PIP_CMD="$(command -v pip)"
+  say "Using local venv at .venv"
+fi
+
+if ! "$PYTHON_CMD" -c "import fastapi, langgraph" >/dev/null 2>&1; then
   say "Installing Python deps (this may take a minute)..."
-  pip install --upgrade pip --quiet
-  pip install -r "$ROOT/requirements.txt" --quiet
+  "$PIP_CMD" install --upgrade pip --quiet
+  "$PIP_CMD" install -r "$ROOT/requirements.txt" --quiet
   ok "Python deps installed"
 else
   ok "Python deps already present"
@@ -97,11 +124,8 @@ BACKEND_LOG="$LOG_DIR/backend.log"
 FRONTEND_LOG="$LOG_DIR/frontend.log"
 : > "$BACKEND_LOG"; : > "$FRONTEND_LOG"
 
-CONDA_PYTHON="/home/ubuntu/miniconda3/envs/agentic_app/bin/python"
-CONDA_UVICORN="/home/ubuntu/miniconda3/envs/agentic_app/bin/uvicorn"
-
 say "Starting backend (FastAPI :8000)..."
-( cd "$ROOT" && exec "$CONDA_UVICORN" backend.main:app \
+( cd "$ROOT" && exec "$PYTHON_CMD" -m uvicorn backend.main:app \
     --host 0.0.0.0 --port 8000 --log-level info \
     >"$BACKEND_LOG" 2>&1 ) &
 BACKEND_PID=$!

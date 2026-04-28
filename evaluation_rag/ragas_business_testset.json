@@ -1,0 +1,391 @@
+[
+  {
+    "id": "biz_001",
+    "agent": "Product",
+    "question": "How should we prioritize features when planning the next quarter for an educational coding app?",
+    "ground_truth": "Use the RICE framework: score each feature by Reach (users affected), Impact (1-10 scale), Confidence (percentage), and Effort (person-months). Calculate RICE = (R × I × C) / E. Higher score = higher priority. The framework was developed at Intercom by Sean McBride.",
+    "expected_doc_ids": ["001_rice_prioritization"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_001v",
+    "agent": "Product",
+    "question": "have 5 features no idea which one to do first",
+    "ground_truth": "Use the RICE framework to rank them: score each by Reach, Impact, Confidence, Effort, then compute (R × I × C) / E. Higher score = ship first. This avoids gut-feel and pet projects.",
+    "expected_doc_ids": ["001_rice_prioritization"],
+    "type": "query_variant"
+  },
+  {
+    "id": "biz_001r",
+    "agent": "Product",
+    "question": "Why does RICE divide by Effort instead of just adding it as a negative factor?",
+    "ground_truth": "RICE is a comparative scoring system meant to express benefit-per-unit-of-cost. Dividing by Effort produces a normalized score that lets you compare features of different sizes fairly — a small high-impact feature scores higher than a huge feature with similar absolute impact. Subtraction would let you simply offset effort, which doesn't normalize for size differences.",
+    "expected_doc_ids": ["001_rice_prioritization"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_002",
+    "agent": "Product",
+    "question": "How do I categorize features into must-have versus delighter for an MVP?",
+    "ground_truth": "Use the KANO model developed by Noriaki Kano in 1984. It has 5 categories: Must-be (basic, missing causes dissatisfaction), Performance (linear satisfaction), Attractive/Delighter (unexpected, creates wow), Indifferent (no effect), Reverse (causes dislike). Use a paired questionnaire with functional + dysfunctional questions.",
+    "expected_doc_ids": ["002_kano_model"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_002r",
+    "agent": "Product",
+    "question": "Why do delighters from last year sometimes feel like 'must-haves' this year?",
+    "ground_truth": "KANO model predicts that customer expectations evolve over time: features that started as Attractive/Delighters become Performance features, and Performance features eventually become Must-be (basics). Examples include long mobile battery life or high-resolution screens. This means product teams must continuously innovate — what wowed users last year is now table-stakes.",
+    "expected_doc_ids": ["002_kano_model"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_003",
+    "agent": "Product",
+    "question": "What underlying job are parents hiring an educational coding app to do for their kids?",
+    "ground_truth": "Use Jobs-to-be-Done framework. The job has functional, emotional, and social dimensions. Functional: help kid learn programming basics. Emotional: feel confident about kid's future, feel like a good parent. Social: signal investment in education to peers. Use the format 'When [situation], I want to [job], so I can [outcome].' Tony Ulwick invented JTBD in 1990.",
+    "expected_doc_ids": ["003_jtbd_framework"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_003r",
+    "agent": "Product",
+    "question": "If two competitors solve the same functional job, how does JTBD help us differentiate?",
+    "ground_truth": "JTBD reminds us that a job has three dimensions: functional, emotional, and social. Even if two products serve the same functional job (e.g., 'teach my kid to code'), they may differ on emotional (one feels playful, another feels serious) or social (one signals 'tech-forward parent', another signals 'STEM-focused household'). Differentiation often comes from owning a distinct emotional or social position rather than functional improvements.",
+    "expected_doc_ids": ["003_jtbd_framework"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_004",
+    "agent": "Product",
+    "question": "What's the right success metric for a learning app to optimize for?",
+    "ground_truth": "Choose a North Star Metric — a single leading indicator that captures core value. The concept was popularized by Sean Ellis. For learning apps, this could be 'Total Lessons Completed Per Week' or 'Time Spent Learning' (similar to Spotify's Time Listening). Avoid lagging indicators like Revenue. Support with 2-3 input metrics that drive it.",
+    "expected_doc_ids": ["004_north_star_metric"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_004r",
+    "agent": "Product",
+    "question": "Why is Revenue generally a poor North Star Metric?",
+    "ground_truth": "Revenue is a lagging indicator — it reflects past customer value rather than predicting future engagement. A North Star Metric should be a leading indicator: a measure of customer value that, when it rises, predicts revenue will follow. Optimizing directly for Revenue can also incentivize short-term tactics (price hikes, aggressive upsells) that damage long-term retention. Sean Ellis recommends user-engagement metrics that correlate with eventual revenue.",
+    "expected_doc_ids": ["004_north_star_metric"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_005",
+    "agent": "Product",
+    "question": "How do I sketch out the business model for a startup idea on a single page?",
+    "ground_truth": "Use Lean Canvas, created by Ash Maurya in 2010 specifically for early-stage startups. It has 9 blocks: Problem, Customer Segments, Unique Value Proposition, Solution, Channels, Revenue Streams, Cost Structure, Key Metrics, Unfair Advantage. Fill in this order, not left-to-right. Adapted from the Business Model Canvas.",
+    "expected_doc_ids": ["005_lean_canvas"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_006",
+    "agent": "Product",
+    "question": "When should I use Business Model Canvas instead of Lean Canvas?",
+    "ground_truth": "Business Model Canvas (Alex Osterwalder) is for established businesses with validated value propositions and existing operations. Lean Canvas (Ash Maurya, 2010) is for early-stage startups validating problem-solution fit. Lean Canvas replaces 4 BMC blocks (Key Activities, Key Resources, Key Partnerships, Customer Relationships) with Problem, Solution, Key Metrics, Unfair Advantage — focusing on what early-stage founders need to figure out first.",
+    "expected_doc_ids": ["006_business_model_canvas", "005_lean_canvas"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_007",
+    "agent": "Product",
+    "question": "What should be in a standard PRD document?",
+    "ground_truth": "A standard PRD has 8 sections: Overview/Summary, Problem Statement, Target Users/Personas, Goals & Success Metrics, User Stories, Functional Requirements (with P0/P1/P2 priorities), Non-functional Requirements (performance/security), and Out of Scope. Optional sections include Dependencies, Risks, and Timeline. Amazon's Working Backwards style is an alternative.",
+    "expected_doc_ids": ["007_prd_template_general"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_007r",
+    "agent": "Product",
+    "question": "Why is the 'Out of Scope' section critical in a PRD?",
+    "ground_truth": "Out of Scope explicitly lists what is NOT being built — preventing scope creep and aligning stakeholders on boundaries. Without it, every reviewer assumes their pet feature is included. Making non-inclusion explicit forces tradeoff conversations early and protects the team from late-stage 'I thought we were also doing X' surprises. It's one of the most undervalued PRD sections.",
+    "expected_doc_ids": ["007_prd_template_general"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_008",
+    "agent": "Product",
+    "question": "How do I write a good user story?",
+    "ground_truth": "Use template: 'As a [role], I want to [action], so that [benefit].' The 'so that' clause captures the why. Apply the INVEST principle (Independent, Negotiable, Valuable, Estimable, Small, Testable). Mike Cohn's Three C's: Card, Conversation, Confirmation. Avoid stories without benefits or that are technical tasks in disguise.",
+    "expected_doc_ids": ["008_user_story_guide"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_008v",
+    "agent": "Product",
+    "question": "user story format please",
+    "ground_truth": "As a [role], I want to [action], so that [benefit]. The 'so that' clause is critical — it captures the why, not just the what. Apply INVEST principle to verify quality.",
+    "expected_doc_ids": ["008_user_story_guide"],
+    "type": "query_variant"
+  },
+  {
+    "id": "biz_009",
+    "agent": "Product",
+    "question": "How do I write acceptance criteria that are clear and testable?",
+    "ground_truth": "Two formats: (1) Given-When-Then BDD style, e.g., 'Given a user is logged in, When they click submit, Then the form is saved.' (2) Checklist of rules. Properties of good AC: user-perspective, testable (binary pass/fail), concrete (avoid 'fast' — say '<2s'), implementation-independent. Mike Cohn calls this 'Conditions of Satisfaction.'",
+    "expected_doc_ids": ["009_acceptance_criteria"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_010",
+    "agent": "Product",
+    "question": "How can I visualize the user's experience from awareness to advocacy?",
+    "ground_truth": "Use a User Journey Map (UJM). Components include: Persona, Scenario, Stages (Awareness → Consideration → Decision → Onboarding → Engagement → Retention → Advocacy), Actions, Thoughts, Feelings, Touchpoints, Pain Points, and Opportunities. Most common format is a matrix table. Useful for empathy building and gap identification.",
+    "expected_doc_ids": ["016_user_journey_map"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_011",
+    "agent": "Research",
+    "question": "How should I analyze the competitive landscape for the kids' coding education industry?",
+    "ground_truth": "Apply Porter's Five Forces (developed by Michael Porter, 1979): (1) Threat of New Entrants — moderate, low capital requirement; (2) Bargaining Power of Suppliers — low, content is commoditized; (3) Bargaining Power of Buyers — high, parents are price-sensitive; (4) Threat of Substitutes — high (free options like Scratch, Code.org); (5) Rivalry — high, with Tynker, CodeMonkey competing.",
+    "expected_doc_ids": ["010_porter_five_forces"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_011r",
+    "agent": "Research",
+    "question": "Why might Porter's Five Forces understate the competitive risk for an EdTech startup competing with free options?",
+    "ground_truth": "Porter's framework treats 'substitutes' as one force, but in EdTech, free substitutes like Scratch or Code.org operate on a fundamentally different economic model (non-profit, subsidized) that traditional competitive analysis misses. The 'free with optional paid' substitute creates a price floor that any paid newcomer must justify a premium against. Porter's framework also doesn't capture network effects (Scratch's huge community library), which can be more important than industry structure for software products.",
+    "expected_doc_ids": ["010_porter_five_forces"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_012",
+    "agent": "Research",
+    "question": "Give me a strategic snapshot of an educational coding startup's position.",
+    "ground_truth": "Use SWOT analysis (developed at Stanford Research Institute, 1960s by Albert Humphrey). Four quadrants: Strengths (internal positive), Weaknesses (internal negative), Opportunities (external positive), Threats (external negative). For advanced strategy, apply TOWS Matrix: SO (offensive), WO (improving), ST (defensive), WT (avoiding).",
+    "expected_doc_ids": ["011_swot_analysis"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_013",
+    "agent": "Research",
+    "question": "How big is the market for an educational coding app for kids 6-12?",
+    "ground_truth": "Use TAM/SAM/SOM framework. TAM (Total Addressable Market): global kids 6-12 — approximately 800M children. SAM (Serviceable Addressable Market): English-speaking + connected families — about 200M. SOM (Serviceable Obtainable Market): realistic Year 1 capture — perhaps 50K users. Use bottom-up estimation (users × ARPU). VCs typically expect TAM > $1B.",
+    "expected_doc_ids": ["012_tam_sam_som"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_013r",
+    "agent": "Research",
+    "question": "Why do VCs reject 'we'll capture 1% of $100B market' pitches?",
+    "ground_truth": "VCs prefer bottom-up reasoning over top-down for several reasons: (1) Top-down assumes you can get any 1%, which ignores customer acquisition costs and competitive dynamics; (2) it shows the founder hasn't done customer research to estimate realistic capture rates; (3) historically, very few startups achieve 1% of large markets — most stay below 0.1%. Bottom-up estimates (users × ARPU × growth model) demonstrate the founder understands unit economics. The '1% of $100B' framing is widely flagged as a red flag in VC pitch decks.",
+    "expected_doc_ids": ["012_tam_sam_som"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_014",
+    "agent": "Research",
+    "question": "Who are the major players in the kids' coding education space and what's the trend?",
+    "ground_truth": "Major K-12 coding education players include: Tynker (subscription, ages 5-18, block+text), Code.org (non-profit, free, Hour of Code), Scratch (MIT, free, visual block-based, ages 8+), Khan Academy (broad free content), CodeMonkey (game-based). Trends: AI-powered personalization, gamification, subscription-first models, parental dashboards. EdTech market is approximately $340B globally in 2024.",
+    "expected_doc_ids": ["013_edtech_market_2024"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_015",
+    "agent": "Research",
+    "question": "What are the most common reasons startups fail?",
+    "ground_truth": "According to CB Insights: (1) Ran out of cash (~38%), (2) No market need (~35%) — most common, (3) Got outcompeted (~20%), (4) Flawed business model (~19%), (5) Regulatory/legal challenges (~18%), (6) Pricing issues (~15%), (7) Wrong team (~14%), (8) Mistimed product (~10%). Famous failure cases: Quibi ($1.75B, 9 months), Theranos (fraud), Juicero ($120M), WeWork (over-leveraged).",
+    "expected_doc_ids": ["014_startup_failure_patterns"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_015r",
+    "agent": "Research",
+    "question": "Quibi raised $1.75B but failed in 9 months. What does this teach us about validating product-market fit?",
+    "ground_truth": "Quibi's failure illustrates the danger of assuming PMF based on celebrity backing and capital rather than user signal. They built short-form mobile video for commutes, but COVID-19 ended commutes during their launch — and they had no plan B because they hadn't tested core engagement assumptions. Key lesson: capital and team pedigree don't replace iterative PMF validation. Even with $1.75B, you can't outspend a wrong product-market hypothesis. Always validate the core engagement loop with real users before scaling.",
+    "expected_doc_ids": ["014_startup_failure_patterns"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_016",
+    "agent": "Research",
+    "question": "How do I conduct user interviews to validate an idea without getting biased feedback?",
+    "ground_truth": "Apply The Mom Test by Rob Fitzpatrick: (1) Talk about their life, not your idea; (2) Ask about specifics in the past, not generic future opinions; (3) Talk less, listen more. Good question templates: 'Tell me about the last time you [did X]', 'What was the hardest part?'. Avoid: 'Would you use this?', leading questions. Conduct 5-10 deep interviews per persona.",
+    "expected_doc_ids": ["015_user_interview_guide"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_016r",
+    "agent": "Research",
+    "question": "Why is asking 'Would you use this product?' a problem in user interviews, even though users say yes?",
+    "ground_truth": "It's exactly that 'yes' that makes it a problem. Hypothetical future questions invite politeness bias — people tell you what they think you want to hear. They cost the user nothing to say yes, and they have no actual experience to ground their answer. The Mom Test principle is to ask about specific past behavior instead: 'Tell me about the last time you tried solving this problem' reveals what people actually do, not what they'd theoretically do. Past behavior predicts future behavior; stated future intent does not.",
+    "expected_doc_ids": ["015_user_interview_guide"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_017",
+    "agent": "Research",
+    "question": "What underlying job are users hiring our product to do?",
+    "ground_truth": "JTBD framework: 'People don't buy products, they hire them to do a job' (Theodore Levitt). A job has 3 dimensions: functional, emotional, social. Famous Milkshake Study by Christensen: morning commuters hire milkshakes for the job 'make my long boring drive interesting + keep me full.' Three schools: Christensen (broad), Ulwick/ODI (outcome-based), Moesta (psychological forces).",
+    "expected_doc_ids": ["003_jtbd_framework"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_018",
+    "agent": "Research",
+    "question": "What's the difference between Lean Canvas and Business Model Canvas?",
+    "ground_truth": "Lean Canvas (Ash Maurya, 2010) is for early-stage startups validating problem-solution fit. It replaces 4 BMC blocks (Key Activities, Key Resources, Key Partnerships, Customer Relationships) with Problem, Solution, Key Metrics, Unfair Advantage. Business Model Canvas (Alex Osterwalder) is for established businesses with validated value propositions.",
+    "expected_doc_ids": ["005_lean_canvas", "006_business_model_canvas"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_019",
+    "agent": "QA",
+    "question": "How do I systematically check if a PRD is complete and well-written?",
+    "ground_truth": "Apply a 30-item PRD review checklist organized into 4 categories: Completeness (8 items: problem statement, personas, MVP scope, success metrics, priorities, user stories, AC, out-of-scope), Clarity & Logic (7 items: feature conflicts, user flow closure, edge cases), Feasibility (7 items: tech risks, dependencies, team capability), Risk Identification (8 items: legal, privacy, security, market acceptance).",
+    "expected_doc_ids": ["017_prd_review_checklist"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_020",
+    "agent": "QA",
+    "question": "How should I structure a test case for a login feature?",
+    "ground_truth": "Standard test case fields: Test ID, Title/Description, Preconditions, Test Steps (numbered), Expected Result, Actual Result, Pass/Fail, Severity (Critical/Major/Minor/Trivial), Priority (P0/P1/P2). Cover test types: Functional (valid credentials succeed), Negative (invalid password), Boundary (5 failed attempts → lockout), Security (SQL injection blocked).",
+    "expected_doc_ids": ["018_acceptance_test_template"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_021",
+    "agent": "QA",
+    "question": "What does a complete acceptance criterion look like for a feature?",
+    "ground_truth": "Use Given-When-Then BDD format: 'Given a registered user is on the login page, When they enter valid credentials and click login, Then they should be redirected to the dashboard.' Or use checklist format. Properties: testable (binary pass/fail), user-perspective (not implementation), concrete (specify '<2s' not 'fast'). AC differs from Definition of Done — AC is story-specific.",
+    "expected_doc_ids": ["009_acceptance_criteria"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_022",
+    "agent": "QA",
+    "question": "What risks should I flag when reviewing a product spec for an app targeting children?",
+    "ground_truth": "From the PRD review checklist Risk Identification category: legal/compliance risks (COPPA for kids, GDPR/PDPA for data privacy), data privacy specifically for minors, data security, user/parent acceptance, business model risks, competitor risks, platform dependency, ethical risks (especially heightened for children's products). Always require explicit handling of minor data.",
+    "expected_doc_ids": ["017_prd_review_checklist"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_023",
+    "agent": "QA",
+    "question": "What's the failure pattern most likely to affect a kid's coding app?",
+    "ground_truth": "Most likely: 'No market need' (35% of startup failures per CB Insights). For kids' coding specifically, parents (the buyers) and kids (the users) are different — easy to build for parents' wishes while kids don't engage. Flag: insufficient user research with actual children, no validation of engagement assumptions, comparing only to other adult-designed products.",
+    "expected_doc_ids": ["014_startup_failure_patterns", "017_prd_review_checklist"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_024",
+    "agent": "QA",
+    "question": "How do I generate test cases that cover boundary and security cases?",
+    "ground_truth": "Standard test types beyond Functional: Boundary (extremes — 5 failed login attempts → lockout, max-length username e.g. 50 chars), Negative (invalid input, error handling), Security (SQL injection, XSS, password masking, exposed API keys), Performance (load), Compatibility (browsers, OS). Each test should be independent, automatable when possible, with clear expected results.",
+    "expected_doc_ids": ["018_acceptance_test_template"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_025",
+    "agent": "QA",
+    "question": "How do I check if user stories in a PRD follow good practices?",
+    "ground_truth": "Apply INVEST principle to each story: Independent, Negotiable, Valuable, Estimable, Small, Testable. Verify the standard format: 'As a [role], I want to [action], so that [benefit].' Anti-patterns to flag: stories that are too large (epics not stories), missing the 'why' (no benefit clause), technical tasks in disguise ('As a developer, I want to refactor...'), missing user role.",
+    "expected_doc_ids": ["008_user_story_guide", "017_prd_review_checklist"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_025r",
+    "agent": "QA",
+    "question": "Why are 'As a developer, I want to refactor X' user stories considered anti-patterns?",
+    "ground_truth": "User stories should describe value from a user's perspective, not internal engineering tasks. 'As a developer, I want to refactor' is a technical task disguised in user-story syntax — the 'role' is internal, the 'action' is implementation, and the 'benefit' is usually missing or technical (faster code). Real user stories drive product decisions through user value. Refactoring is legitimate work but belongs in technical debt tickets or sprint capacity planning, not as user stories that compete with feature work for prioritization.",
+    "expected_doc_ids": ["008_user_story_guide"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_026",
+    "agent": "Delivery",
+    "question": "How do I structure a pitch deck for a seed-stage startup?",
+    "ground_truth": "Classic 10-slide YC/Sequoia structure: (1) Cover with tagline, (2) Problem, (3) Solution, (4) Market Size (TAM/SAM/SOM), (5) Product (screenshots/demo), (6) Traction (metrics — most critical for early-stage), (7) Business Model, (8) Competition, (9) Team, (10) Ask (funding amount, valuation, use of funds). Airbnb's seed deck (2009) is held up as a model — simple, story-driven. Rule of thumb: <30 words per slide.",
+    "expected_doc_ids": ["019_pitch_deck_template"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_027",
+    "agent": "Delivery",
+    "question": "How do we get our first 1000 users for a new product with network effects?",
+    "ground_truth": "Apply cold start strategies (Andrew Chen, 'The Cold Start Problem', 2021): (1) Atomic Network — start with smallest viable network, e.g., one school instead of 'all kids'; (2) Hand-curated Content — founders manually seed; (3) Single-player Mode — useful even alone; (4) Manual Hustle — unscalable founder actions like Airbnb door-to-door photography; (5) Borrowed Network — leverage existing platforms like Airbnb's Craigslist hack. After launch: retention > acquisition.",
+    "expected_doc_ids": ["020_cold_start_playbook"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_027r",
+    "agent": "Delivery",
+    "question": "Why does Andrew Chen say 'retention > acquisition' for cold-start products?",
+    "ground_truth": "Without strong retention, acquisition is a leaky bucket — every new user you get walks out the back door. For network-effect products, retention also compounds: returning users build the content, connections, or signals that make the product useful for new users. If retention is weak, acquisition spend just delays the inevitable. Chen's framing: validate that even your earliest users keep coming back BEFORE you scale acquisition. This is why 'one-week retention' is a common early KPI — if users stick after one week, your product solves a real problem.",
+    "expected_doc_ids": ["020_cold_start_playbook"],
+    "type": "reasoning"
+  },
+  {
+    "id": "biz_028",
+    "agent": "Delivery",
+    "question": "What are the famous historical examples of solving the cold start problem?",
+    "ground_truth": "Airbnb: Craigslist crosspost hack + door-to-door professional photography. Uber: VIP launches in San Francisco, free rides for tech influencers. Tinder: sorority/fraternity parties with both genders signed up the same night. Reddit: founders created hundreds of fake accounts to seed content. Pinterest: invite-only with designer community focus. Facebook: university-by-university rollout starting at Harvard.",
+    "expected_doc_ids": ["020_cold_start_playbook"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_029",
+    "agent": "Delivery",
+    "question": "What slide is most critical in a seed-round pitch deck?",
+    "ground_truth": "The Traction slide (slide 6 of 10) is most critical for early-stage rounds. It shows real metrics: user growth, engagement, revenue (if any), retention curves, user love quotes. VCs care about Traction more than ideas at this stage. Common mistakes: vague market sizing ('1% of $100B'), too many words per slide, weak team slide, missing 'ask' section.",
+    "expected_doc_ids": ["019_pitch_deck_template"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_030",
+    "agent": "Delivery",
+    "question": "What should our launch plan focus on for an educational coding app?",
+    "ground_truth": "For a kids' coding app, the most relevant cold start strategies are: (1) Atomic Network — partner with one specific school or summer camp; (2) Manual Hustle — founders create the first 10-20 missions by hand; (3) Single-player Mode — make app valuable for one kid even without classmates. Avoid borrowed network unless you have a specific platform partnership. Post-launch focus on retention (Day-7, Day-30) over acquisition.",
+    "expected_doc_ids": ["020_cold_start_playbook"],
+    "type": "standard"
+  },
+  {
+    "id": "biz_corner_001",
+    "agent": "Product",
+    "question": "What's the airspeed velocity of an unladen swallow?",
+    "ground_truth": "This question is not related to product management or our knowledge base. The agent should acknowledge that the question is outside its domain and either refuse to answer based on KB content or clarify what topic the user actually wants help with.",
+    "expected_doc_ids": [],
+    "type": "corner_case",
+    "expected_behavior": "refuse_or_redirect"
+  },
+  {
+    "id": "biz_corner_002",
+    "agent": "Research",
+    "question": "Tell me about quantum computing market trends",
+    "ground_truth": "Our business knowledge base does not contain information specifically about the quantum computing market. We have general industry frameworks (Porter Five Forces, TAM/SAM/SOM) that could be applied if asked, but specific quantum-computing market data is not in our KB. The agent should acknowledge this gap rather than fabricate specifics.",
+    "expected_doc_ids": [],
+    "type": "corner_case",
+    "expected_behavior": "acknowledge_gap"
+  },
+  {
+    "id": "biz_corner_003",
+    "agent": "QA",
+    "question": "What's the bug fix policy in our codebase?",
+    "ground_truth": "This is a question about implementation details specific to a particular codebase, not about general product/QA methodology. Our KB covers general PRD review checklists, acceptance test templates, and review patterns — not codebase-specific policies. The agent should clarify the scope question or suggest reviewing the project's CONTRIBUTING.md.",
+    "expected_doc_ids": [],
+    "type": "corner_case",
+    "expected_behavior": "redirect"
+  },
+  {
+    "id": "biz_corner_004",
+    "agent": "Product",
+    "question": "thinking about adding a feature",
+    "ground_truth": "The question is too vague to apply specific frameworks. The agent should ask for clarification: which feature, what's the proposed user value, what alternatives have been considered. With more context, frameworks like RICE or KANO could be applied.",
+    "expected_doc_ids": [],
+    "type": "corner_case",
+    "expected_behavior": "ask_clarification"
+  },
+  {
+    "id": "biz_corner_005",
+    "agent": "Delivery",
+    "question": "what's the best programming language to learn in 2030?",
+    "ground_truth": "This question is about technology forecasting and individual learning advice, not in scope of our delivery/launch playbook KB. Our KB covers pitch deck structure and cold-start strategies, not future tech predictions. The agent should acknowledge this is outside the KB.",
+    "expected_doc_ids": [],
+    "type": "corner_case",
+    "expected_behavior": "acknowledge_out_of_scope"
+  }
+]

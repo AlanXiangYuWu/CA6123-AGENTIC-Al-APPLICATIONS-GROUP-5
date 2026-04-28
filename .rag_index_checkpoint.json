@@ -1,0 +1,14 @@
+{
+  "completed_files": [
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/001_rice_prioritization.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/002_kano_model.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/003_jtbd_framework.md"
+  ],
+  "business_files": 3,
+  "technical_files": 0,
+  "total_chunks": 42,
+  "skipped_empty": 0,
+  "total_files": 20,
+  "embed_model": "Qwen/Qwen3-Embedding-8B",
+  "truncate_dim": 0
+}

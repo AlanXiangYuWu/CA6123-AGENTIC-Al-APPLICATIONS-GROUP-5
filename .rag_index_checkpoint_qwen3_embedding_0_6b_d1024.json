@@ -1,0 +1,31 @@
+{
+  "completed_files": [
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/001_rice_prioritization.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/002_kano_model.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/003_jtbd_framework.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/004_north_star_metric.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/005_lean_canvas.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/01_methodology/006_business_model_canvas.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/02_prd_templates/007_prd_template_general.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/02_prd_templates/008_user_story_guide.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/02_prd_templates/009_acceptance_criteria.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/03_market_research/010_porter_five_forces.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/03_market_research/011_swot_analysis.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/03_market_research/012_tam_sam_som.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/04_industry_cases/013_edtech_market_2024.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/04_industry_cases/014_startup_failure_patterns.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/05_user_research/015_user_interview_guide.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/05_user_research/016_user_journey_map.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/06_qa_checklists/017_prd_review_checklist.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/06_qa_checklists/018_acceptance_test_template.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/07_delivery_ops/019_pitch_deck_template.md",
+    "/mnt/d/code/CA6123-AGENTIC-Al-APPLICATIONS-GROUP-5/RAG_RAW_materials/business_kb/07_delivery_ops/020_cold_start_playbook.md"
+  ],
+  "business_files": 20,
+  "technical_files": 0,
+  "total_chunks": 416,
+  "skipped_empty": 0,
+  "total_files": 20,
+  "embed_model": "Qwen/Qwen3-Embedding-0.6B",
+  "truncate_dim": 0
+}
