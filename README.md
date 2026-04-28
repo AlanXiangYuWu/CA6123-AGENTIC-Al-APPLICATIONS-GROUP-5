@@ -17,11 +17,11 @@
 
 ## 团队成员 · Team
 
-| 姓名 | 主要负责 |
+| 成员 (按姓名拉丁字母排序) | 主要职责 |
 |---|---|
-| **武翔宇** Wu Xiangyu | 主要实现 — 后端 / Orchestrator / Agent 编排 / RAG / Guardrails / 前端集成 |
-| **温晏瑜** Wen Yanyu | 产品设计 · 结构设计 · 前端页面设计 |
-| **王欣怡** Wang Xinyi | 产品设计 · 结构设计 · 前端页面设计 |
+| **王欣怡** Wang Xinyi | Agent编排设计 / RAG实现 / Customer Agent |
+| **温晏瑜** Wen Yanyu | 产品设计 · 结构设计 · 前端页面设计 / RAG数据集构建 |
+| **武翔宇** Wu Xiangyu | 初版Demo实现 / Guardrails / 前端集成 |
 
 > 视频中每位组员需出镜讲解自己负责的章节（总长 ≤ 12 分钟）。
 

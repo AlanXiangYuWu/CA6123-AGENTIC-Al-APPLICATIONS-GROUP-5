@@ -38,7 +38,7 @@ def parse_args() -> argparse.Namespace:
         "--output",
         required=True,
         type=Path,
-        help="Output file path, e.g. exports/milvus_backup.json",
+        help="Output file path, e.g. data/rag/exports/milvus_backup.json",
     )
     p.add_argument(
         "--format",

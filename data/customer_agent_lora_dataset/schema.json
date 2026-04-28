@@ -1,0 +1,35 @@
+{
+  "product_name": "string",
+  "one_sentence_summary": "string",
+  "target_users": [
+    "string"
+  ],
+  "user_scenario": "string",
+  "core_problem": "string",
+  "proposed_solution": "string",
+  "must_have_features": [
+    "string"
+  ],
+  "nice_to_have_features": [
+    "string"
+  ],
+  "platform": "string",
+  "business_model": "string",
+  "constraints": {
+    "budget": "string",
+    "timeline": "string",
+    "region": "string",
+    "compliance": [
+      "string"
+    ]
+  },
+  "success_criteria": [
+    "string"
+  ],
+  "assumptions": [
+    "string"
+  ],
+  "open_questions": [
+    "string"
+  ]
+}

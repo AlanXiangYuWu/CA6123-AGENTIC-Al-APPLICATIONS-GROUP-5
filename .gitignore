@@ -38,3 +38,4 @@ dist/
 final_package*.json
 *.csv
 .logs/
+data/rag/exports/milvus_all.json

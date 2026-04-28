@@ -12,8 +12,8 @@ from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 
 
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_TESTSET = ROOT / "evaluation_rag" / "ragas_business_testset.json"
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_TESTSET = ROOT / "data" / "rag" / "eval" / "ragas_business_testset.json"
 DEFAULT_COLLECTION = "business_collection_qwen3_embedding_0_6b_d1024"
 DEFAULT_MODE = "hybrid"
 DEFAULT_TOPK = 5

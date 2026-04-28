@@ -18,7 +18,8 @@ except Exception:  # pragma: no cover
     torch = None
 
 ROOT = Path(__file__).resolve().parents[2]
-RAW_DIR = ROOT / "RAG_RAW_materials"
+DATA_DIR = ROOT / "data" / "rag"
+RAW_DIR = DATA_DIR / "raw"
 MILVUS_URI = os.getenv("MILVUS_URI", "http://127.0.0.1:19530")
 # Qwen3 embedding models:
 # - Qwen/Qwen3-Embedding-0.6B (1024 dim, best for local)
@@ -29,7 +30,8 @@ EMBED_BATCH_SIZE = int(os.getenv("EMBED_BATCH_SIZE", "4"))
 # Optional Matryoshka truncation dimension (Qwen3 supports custom output dims).
 # Set to 0 to disable, e.g. EMBED_TRUNCATE_DIM=768
 EMBED_TRUNCATE_DIM = int(os.getenv("EMBED_TRUNCATE_DIM", "0"))
-CHECKPOINT_PATH = ROOT / ".rag_index_checkpoint.json"
+CHECKPOINT_DIR = DATA_DIR / "checkpoints"
+CHECKPOINT_PATH = CHECKPOINT_DIR / ".rag_index_checkpoint.json"
 FORCE_RESTART = os.getenv("FORCE_RESTART", "0") == "1"
 AUTO_RECREATE_COLLECTION = os.getenv("AUTO_RECREATE_COLLECTION", "0") == "1"
 COLLECTION_SUFFIX = os.getenv("COLLECTION_SUFFIX", "").strip()
@@ -159,8 +161,9 @@ def resolve_collection_names(dim: int) -> tuple[str, str]:
 
 
 def resolve_checkpoint_path(dim: int) -> Path:
+    CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
     tag = build_run_tag(dim)
-    return ROOT / f".rag_index_checkpoint_{tag}.json"
+    return CHECKPOINT_DIR / f".rag_index_checkpoint_{tag}.json"
 
 
 def _extract_vector_dim(collection_info: dict) -> int | None:

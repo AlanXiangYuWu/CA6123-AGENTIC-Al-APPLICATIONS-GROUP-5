@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-04-28",
+  "total_examples": 400,
+  "splits": {
+    "train": 300,
+    "val": 50,
+    "test": 50
+  },
+  "formats": [
+    "alpaca",
+    "chatml"
+  ],
+  "source_files": [
+    "customer_brief_template.json",
+    "新建 文本文档.md"
+  ],
+  "product_scope": "software_only",
+  "language": "English",
+  "empty_field_policy": "For vague or incomplete software ideas, unknown fields are intentionally left empty so follow-up questions can be triggered.",
+  "example_categories": {
+    "messy_inputs": 121,
+    "vague_ideas": 96,
+    "partial_ideas": 117,
+    "edge_cases": 39,
+    "incomplete_ideas": 27
+  }
+}
