@@ -56,12 +56,30 @@ def web_search(query: str, limit: int = 5) -> list[dict[str, Any]]:
         r'<a[^>]*href="(?P<href>[^"]*(?:/l/\?uddg=|duckduckgo\.com/l/\?uddg=)[^"]*)"[^>]*>(?P<title>.*?)</a>',
         re.IGNORECASE | re.DOTALL,
     )
+    md_link_pat = re.compile(
+        r"\d+\.\[(?P<title>[^\]]+)\]\((?P<href>https?://[^\)]+)\)",
+        re.IGNORECASE,
+    )
+
+    def _decode_ddg_redirect(h: str) -> str:
+        if not h:
+            return h
+        try:
+            parsed = urllib.parse.urlparse(h)
+            qd = urllib.parse.parse_qs(parsed.query)
+            uddg = qd.get("uddg", [])
+            if uddg and isinstance(uddg[0], str):
+                return urllib.parse.unquote(uddg[0])
+        except Exception:  # noqa: BLE001
+            return h
+        return h
 
     def _normalize_href(h: str) -> str:
         h2 = html.unescape(h or "").strip()
         # ddg sometimes returns schemeless //duckduckgo.com/...
         if h2.startswith("/l/?uddg="):
             return "//duckduckgo.com" + h2
+        h2 = _decode_ddg_redirect(h2)
         return h2
 
     def _clean_text(t: str) -> str:
@@ -84,6 +102,12 @@ def web_search(query: str, limit: int = 5) -> list[dict[str, Any]]:
 
         if not hrefs:
             for m in a_fallback_pat.finditer(raw):
+                hrefs.append(m.group("href"))
+                titles.append(m.group("title"))
+                if len(hrefs) >= limit * 2:
+                    break
+        if not hrefs:
+            for m in md_link_pat.finditer(raw):
                 hrefs.append(m.group("href"))
                 titles.append(m.group("title"))
                 if len(hrefs) >= limit * 2:

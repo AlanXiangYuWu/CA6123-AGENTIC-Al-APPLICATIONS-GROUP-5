@@ -60,6 +60,57 @@ def _write_jsonl(path: Path, record: dict[str, Any]) -> None:
         f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
 
 
+def _append_pretty_json(path: Path, record: dict[str, Any]) -> None:
+    """Append one record into a pretty-printed JSON array file."""
+    _ensure_parent_dir(path)
+    data: list[dict[str, Any]]
+    if path.exists():
+        try:
+            existing = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(existing, list):
+                data = existing
+            else:
+                data = [record]
+        except Exception:  # noqa: BLE001
+            data = [record]
+    else:
+        data = []
+    data.append(record)
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2, default=str),
+        encoding="utf-8",
+    )
+
+
+def _write_artifact_markdown(path: Path, record: dict[str, Any]) -> None:
+    """Write a human-friendly markdown view for artifact logs."""
+    _ensure_parent_dir(path)
+    ts = record.get("ts", "")
+    artifact_name = record.get("artifact_name", "")
+    payload = record.get("payload", {})
+
+    lines: list[str] = []
+    lines.append(f"# Artifact Log - {artifact_name}")
+    lines.append("")
+    lines.append(f"- Timestamp: `{ts}`")
+    if isinstance(payload, dict):
+        module = payload.get("module")
+        thread_id = payload.get("thread_id")
+        if module:
+            lines.append(f"- Module: `{module}`")
+        if thread_id:
+            lines.append(f"- Thread: `{thread_id}`")
+    lines.append("")
+    lines.append("## Payload")
+    lines.append("")
+    lines.append("```json")
+    lines.append(json.dumps(payload, ensure_ascii=False, indent=2, default=str))
+    lines.append("```")
+    lines.append("")
+
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def log_step(step: str, payload: Any, *, level: str = "INFO") -> None:
     """
     Log an intermediate step.
@@ -77,10 +128,12 @@ def log_step(step: str, payload: Any, *, level: str = "INFO") -> None:
     run_id = _run_id_var.get()
     if not run_id:
         run_id = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = root / ".logs" / f"research_steps_{run_id}.jsonl"
+    path_jsonl = root / ".logs" / f"research_steps_{run_id}.jsonl"
+    path_pretty = root / ".logs" / f"research_steps_{run_id}.pretty.json"
     record = {"ts": ts, "level": level, "step": step, "payload": payload}
     try:
-        _write_jsonl(path, record)
+        _write_jsonl(path_jsonl, record)
+        _append_pretty_json(path_pretty, record)
     except Exception:  # noqa: BLE001
         # Don't break the agent if logging fails.
         pass
@@ -89,20 +142,56 @@ def log_step(step: str, payload: Any, *, level: str = "INFO") -> None:
 def log_artifact(artifact_name: str, payload: Any) -> None:
     """
     Log artifacts (final structured outputs) to one file.
-    Writes to `.logs/artifacts_<timestamp>.jsonl`.
+    Writes to `.logs/artifacts_<timestamp>.json` (pretty-printed).
     """
     ts = _dt.datetime.now().isoformat(timespec="seconds")
     root = _project_root()
     run_id = _run_id_var.get()
     if not run_id:
         run_id = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = root / ".logs" / f"artifacts_{run_id}.jsonl"
+    path_json = root / ".logs" / f"artifacts_{run_id}.json"
+    path_md = root / ".logs" / f"artifacts_{run_id}.md"
     record = {"ts": ts, "artifact_name": artifact_name, "payload": payload}
     try:
-        _write_jsonl(path, record)
+        _append_pretty_json(path_json, record)
+        _write_artifact_markdown(path_md, record)
     except Exception:  # noqa: BLE001
         pass
 
 
-__all__ = ["set_log_buffer", "reset_log_buffer", "log_step", "log_artifact"]
+def log_llm_call_start(stage: str, payload: Any | None = None) -> None:
+    """Standard start-event for any LLM call across agents."""
+    body = {"stage": stage}
+    if payload is not None:
+        body["payload"] = payload
+    log_step("llm_call_start", body)
+
+
+def log_llm_call_end(
+    stage: str,
+    *,
+    ok: bool,
+    response_chars: int | None = None,
+    error: str | None = None,
+    payload: Any | None = None,
+) -> None:
+    """Standard end-event for any LLM call across agents."""
+    body: dict[str, Any] = {"stage": stage, "ok": ok}
+    if response_chars is not None:
+        body["response_chars"] = response_chars
+    if error:
+        body["error"] = error
+    if payload is not None:
+        body["payload"] = payload
+    log_step("llm_call_end", body, level="INFO" if ok else "WARN")
+
+
+__all__ = [
+    "set_log_buffer",
+    "reset_log_buffer",
+    "log_step",
+    "log_artifact",
+    "log_llm_call_start",
+    "log_llm_call_end",
+]
 

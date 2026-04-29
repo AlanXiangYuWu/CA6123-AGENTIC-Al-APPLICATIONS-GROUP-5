@@ -15,6 +15,7 @@ from fastapi import APIRouter, FastAPI
 
 from backend.agents.research import research_agent
 from backend.core.state import initial_state
+from backend.rag.kb import configure_kb_collections, get_kb_runtime_status
 from backend.utils.debug_logger import log_artifact, reset_log_buffer, set_log_buffer
 
 
@@ -62,6 +63,27 @@ def get_default_input(module: str = "research") -> dict[str, Any]:
     if m == "research":
         return {"module": "research", "project_brief": _default_research_project_brief()}
     return {"error": f"Unsupported module for default input: {m}"}  # type: ignore[return-value]
+
+
+@test_router.get("/api-test/rag/collections")
+def get_rag_collections() -> dict[str, Any]:
+    return get_kb_runtime_status()
+
+
+@test_router.post("/api-test/rag/collections")
+def set_rag_collections(payload: dict[str, Any]) -> dict[str, Any]:
+    business = payload.get("business_collection")
+    technical = payload.get("technical_collection")
+    if business is not None and not isinstance(business, str):
+        return {"error": "business_collection must be string"}  # type: ignore[return-value]
+    if technical is not None and not isinstance(technical, str):
+        return {"error": "technical_collection must be string"}  # type: ignore[return-value]
+    active = configure_kb_collections(
+        business_collection=business,
+        technical_collection=technical,
+    )
+    status = get_kb_runtime_status()
+    return {"status": "ok", "active_collections": active, "runtime": status}
 
 
 @test_router.post("/api-test/test/run")
