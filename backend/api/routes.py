@@ -119,10 +119,7 @@ async def ws_run(ws: WebSocket) -> None:
         user_idea = payload.get("user_idea", "")
         thread_id = payload.get("thread_id") or str(uuid.uuid4())
 
-        if len(user_idea) < 10:
-            await ws.send_json({"event": "error", "message": "user_idea too short"})
-            await ws.close()
-            return
+    
 
         inj = await asyncio.to_thread(detect_prompt_injection, user_idea)
         if inj.get("is_injection") and inj.get("confidence", 0) > 0.7:

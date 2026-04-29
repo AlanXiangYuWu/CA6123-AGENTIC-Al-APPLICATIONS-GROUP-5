@@ -3,6 +3,7 @@ defineProps({
   idea: { type: String, required: true },
   busy: { type: Boolean, default: false },
   threadId: { type: String, default: '' },
+  runDisabled: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:idea', 'reset', 'run'])
@@ -20,8 +21,8 @@ function onIdeaInput(event) {
       <span class="tag">thread: {{ threadId || '-' }}</span>
       <div class="row">
         <button class="secondary" @click="emit('reset')" :disabled="busy">Reset</button>
-        <button @click="emit('run')" :disabled="busy">
-          {{ busy ? 'Running…' : 'Run pipeline' }}
+        <button @click="emit('run')" :disabled="busy || runDisabled">
+          {{ busy ? 'Running…' : runDisabled ? 'Test mode' : 'Run pipeline' }}
         </button>
       </div>
     </div>

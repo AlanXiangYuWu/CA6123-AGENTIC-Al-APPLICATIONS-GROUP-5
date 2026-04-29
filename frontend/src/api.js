@@ -34,3 +34,26 @@ export function streamRun(userIdea, handlers, threadId = '') {
   ws.onclose = () => handlers.onClose?.()
   return ws
 }
+
+export async function testModule(module) {
+  const r = await fetch(`/api-test/test/run`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ module }),
+  })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.detail?.message || err.error || `HTTP ${r.status}`)
+  }
+  return r.json()
+}
+
+export async function fetchDefaultTestInput(module) {
+  const path = `/api-test/test/default-input?module=${encodeURIComponent(module)}`
+  const r = await fetch(path, { method: 'GET' })
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}))
+    throw new Error(err.detail?.message || err.error || `HTTP ${r.status}`)
+  }
+  return r.json()
+}

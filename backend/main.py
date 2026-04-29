@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.routes import router
 from backend.core.config import get_settings
+from backend.test_main import test_router
 
 settings = get_settings()
 
@@ -30,6 +31,8 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix="/api")
+# For test only
+app.include_router(test_router)
 
 
 @app.get("/")

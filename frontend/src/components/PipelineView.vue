@@ -3,8 +3,9 @@ defineProps({
   trace: { type: Array, default: () => [] },
   running: { type: String, default: '' },
   activeAgent: { type: String, default: 'customer' },
+  testMode: { type: Boolean, default: false },
 })
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'test-start'])
 
 const NODES = [
   { id: 'customer', label: 'Customer' },
@@ -39,6 +40,16 @@ function statusOf(id, trace, running) {
       <div v-if="running === n.id" class="node-running-badge">RUNNING</div>
       <div class="node-dot" />
       {{ n.label }}
+
+      <button
+        v-if="testMode && activeAgent === n.id && n.id === 'research'"
+        class="node-test-start"
+        @click.stop="emit('test-start', n.id)"
+        aria-label="Start module test"
+        type="button"
+      >
+        ▶ Start
+      </button>
     </div>
   </div>
 </template>

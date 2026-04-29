@@ -57,13 +57,31 @@ def parse_args() -> argparse.Namespace:
         default='id != ""',
         help='Milvus filter expression for query (default: all rows with non-empty id).',
     )
+    p.add_argument(
+        "--redact-source-path",
+        dest="redact_source_path",
+        action="store_true",
+        default=True,
+        help=(
+            "Redact source_path for sharing (default: on): keep only path relative "
+            "to data/rag/raw when possible, otherwise keep filename only."
+        ),
+    )
+    p.add_argument(
+        "--no-redact-source-path",
+        dest="redact_source_path",
+        action="store_false",
+        help="Disable source_path redaction and keep original paths.",
+    )
     return p.parse_args()
 
 
-def default_output_fields(include_vector: bool) -> list[str]:
-    base = ["id", "text", "source_path", "doc_id", "kb_type"]
+def default_output_fields(include_vector: bool, redact_source_path: bool) -> list[str]:
+    base = ["id", "text", "doc_id", "kb_type"]
+    if not redact_source_path:
+        base.insert(2, "source_path")
     if include_vector:
-        return ["id", "vector", "text", "source_path", "doc_id", "kb_type"]
+        return ["id", "vector", *base[1:]]
     return base
 
 
@@ -112,6 +130,12 @@ def query_all_rows(
     return rows
 
 
+def apply_source_path_redaction(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    for row in rows:
+        row.pop("source_path", None)
+    return rows
+
+
 def main() -> None:
     args = parse_args()
     client = MilvusClient(uri=args.uri)
@@ -127,7 +151,7 @@ def main() -> None:
             )
         target_names = [args.collection]
 
-    output_fields = default_output_fields(args.include_vector)
+    output_fields = default_output_fields(args.include_vector, args.redact_source_path)
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
     if args.format == "jsonl":
@@ -140,6 +164,8 @@ def main() -> None:
                     args.batch_size,
                     args.filter,
                 )
+                if args.redact_source_path:
+                    rows = apply_source_path_redaction(rows)
                 for row in rows:
                     line = {"collection": coll, **row}
                     f.write(json.dumps(line, ensure_ascii=False) + "\n")
@@ -159,21 +185,27 @@ def main() -> None:
             args.batch_size,
             args.filter,
         )
+        if args.redact_source_path:
+            payload = apply_source_path_redaction(payload)
     else:
         payload = {}
         for coll in target_names:
-            payload[coll] = query_all_rows(
+            rows = query_all_rows(
                 client,
                 coll,
                 output_fields,
                 args.batch_size,
                 args.filter,
             )
+            if args.redact_source_path:
+                rows = apply_source_path_redaction(rows)
+            payload[coll] = rows
 
     meta = {
         "milvus_uri": args.uri,
         "collections": target_names,
         "include_vector": args.include_vector,
+        "redact_source_path": args.redact_source_path,
         "row_counts": (
             {target_names[0]: len(payload)}
             if len(target_names) == 1

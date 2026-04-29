@@ -6,6 +6,7 @@ defineProps({
   selectedAgent: { type: String, required: true },
   selectedAgentRunning: { type: Boolean, default: false },
   selectedAgentData: { type: [Object, Array, String, null], default: null },
+  testMode: { type: Boolean, default: false },
   state: { type: Object, required: true },
 })
 </script>
@@ -18,6 +19,11 @@ defineProps({
     <div class="pipeline-hint" style="margin-bottom: 10px">
       This panel shows the selected agent's output snapshot.
     </div>
+    <ArtifactCard
+      v-if="selectedAgent === 'research' && testMode && state.project_brief"
+      title="Test Input (Project Brief)"
+      :data="state.project_brief"
+    />
     <div class="agent-running-state" v-if="selectedAgentRunning && !selectedAgentData">
       <div class="agent-running-title">{{ selectedAgentTitle }} is running...</div>
       <div class="typing-dots" aria-label="Agent is processing">
@@ -27,7 +33,11 @@ defineProps({
         This stage is active. Output will appear here once this agent finishes.
       </div>
     </div>
-    <ArtifactCard v-else-if="selectedAgent === 'research'" title="Research Report" :data="state.research_report" />
+    <ArtifactCard
+      v-else-if="selectedAgent === 'research'"
+      title="Research Report"
+      :data="state.research_report"
+    />
     <ArtifactCard v-else-if="selectedAgent === 'product'" title="PRD" :data="state.prd" />
     <ArtifactCard v-else-if="selectedAgent === 'architect'" title="Technical Design" :data="state.tech_design" />
     <ArtifactCard v-else-if="selectedAgent === 'coder'" title="Code Artifact" :data="state.code_artifact" />
