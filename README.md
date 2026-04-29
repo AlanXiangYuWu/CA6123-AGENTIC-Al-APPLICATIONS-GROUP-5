@@ -21,7 +21,7 @@
 |---|---|
 | **王欣怡** Wang Xinyi | Agent编排设计 / RAG实现 / Customer Agent |
 | **温晏瑜** Wen Yanyu | 产品设计 · 结构设计 · 前端页面设计 / RAG数据集构建 |
-| **武翔宇** Wu Xiangyu | 初版Demo实现 / Guardrails / 前端集成 |
+| **武翔宇** Wu Xiangyu | 系统架构设计 / 技术选型设计 / 初版Demo实现 / Guardrails / 前后端集成 / LoRA模型微调 / 整体系统评估 |
 
 > 视频中每位组员需出镜讲解自己负责的章节（总长 ≤ 12 分钟）。
 
@@ -50,7 +50,7 @@
 | 2 | **Perceive** | `backend/agents/customer.py`（理解用户）+ `backend/rag/`（检索增强）| ✅ |
 | 3 | **Reason** | `backend/agents/orchestrator.py`（路由 + 任务拆解）+ 各 agent CoT prompt | ✅ |
 | 4 | **Action** | RAG 检索 + （TODO）Tool calling / A2A | ⚠️ |
-| 5 | **Learn** | Few-shot prompts + （TODO）LoRA 微调 Customer Agent | ⚠️ |
+| 5 | **Learn** | Few-shot prompts + LoRA 微调 Customer Agent (Qwen2.5-3B-Instruct, 400条数据) | ✅ |
 | 6 | **AI-Human** | 前端输入 / 流水线可视化 / 工件下载 + 回流确认 | ✅ |
 | 7 | **Responsible AI** | `backend/guardrails/` + `agents/qa.py`（grounding）| ✅ |
 | 8 | **Conclusion** | 视频 + PPT（待录制）| ⏳ |
@@ -196,7 +196,7 @@ npm run preview    # serves ./dist on :4173
 
 ## 5. TODO (v2)
 
-- [ ] LoRA fine-tune Customer Agent (Unsloth + Qwen2.5-7B)
+- [x] LoRA fine-tune Customer Agent (Qwen2.5-3B-Instruct, 4-bit QLoRA, 300 train / 50 val / 50 test, eval_loss=0.103)
 - [ ] RAGAS eval pipeline (`scripts/eval_ragas.py`)
 - [ ] Guardrails attack-suite report
 - [ ] Wrap Customer + Delivery as A2A servers (Google `a2a-sdk`)
