@@ -12,10 +12,8 @@ bash scripts/rag/0_install.sh
 
 ## Start DB + Auto Import
 
-Before running bootstrap, place:
-- `data/rag/exports/milvus_all.json`
-
-under:
+Before running bootstrap, unzip/extract `milvus_all.json` from the corresponding package
+and place it under:
 - `data/rag/exports/`
 
 ```bash
@@ -25,7 +23,8 @@ bash scripts/rag/6_bootstrap_db_with_import.sh
 What it does:
 - starts persistent Milvus containers (`etcd`, `minio`, `milvus-standalone`)
 - checks whether Milvus already has data
-- if empty, imports all JSON files from `data/rag/exports`
+- if empty, imports JSON exports from `data/rag/exports`
+  - supports both single-collection and multi-collection export format (e.g. `milvus_all.json`)
 
 ## Optional env vars
 
