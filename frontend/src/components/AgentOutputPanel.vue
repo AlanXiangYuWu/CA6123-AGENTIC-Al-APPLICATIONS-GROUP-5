@@ -24,6 +24,16 @@ defineProps({
       title="Test Input (Project Brief)"
       :data="state.project_brief"
     />
+    <ArtifactCard
+      v-if="selectedAgent === 'product' && testMode && state.project_brief"
+      title="Test Input (Project Brief)"
+      :data="state.project_brief"
+    />
+    <ArtifactCard
+      v-if="selectedAgent === 'product' && testMode && state.research_report"
+      title="Test Input (Research Report)"
+      :data="state.research_report"
+    />
     <div class="agent-running-state" v-if="selectedAgentRunning && !selectedAgentData">
       <div class="agent-running-title">{{ selectedAgentTitle }} is running...</div>
       <div class="typing-dots" aria-label="Agent is processing">

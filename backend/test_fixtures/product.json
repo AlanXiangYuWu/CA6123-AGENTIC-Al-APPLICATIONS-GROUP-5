@@ -1,0 +1,88 @@
+{
+  "module": "product",
+  "project_brief": {
+    "product_name": "Kids Coding Companion (Python Missions)",
+    "one_sentence_summary": "An educational coding app for kids (6-12) that teaches Python through game-like missions.",
+    "target_users": ["Parents (buyers)", "Kids (learners)"],
+    "user_scenario": "A parent wants structured coding learning for their 6-12-year-old with visible progress.",
+    "core_problem": "Kids struggle to sustain learning motivation and parents lack clear milestones.",
+    "proposed_solution": "A mission-based Python learning journey with daily progress, guided challenges, and parent-friendly dashboards.",
+    "must_have_features": [
+      "Mission progression with checkpoints",
+      "Age-appropriate Python learning content"
+    ],
+    "nice_to_have_features": ["Adaptive hints", "Community showcases"],
+    "platform": "Mobile + Web (progress dashboard)",
+    "business_model": "Subscription with tiered plans for families",
+    "constraints": {
+      "budget": "Tight initial budget (MVP in 6-8 weeks).",
+      "timeline": "MVP in 6-8 weeks; iterate after initial learning retention tests.",
+      "region": "Global / English-first",
+      "compliance": ["COPPA-style child privacy considerations"]
+    },
+    "success_criteria": [
+      "Day-7 retention",
+      "Lessons completed per week",
+      "Parent satisfaction surveys"
+    ],
+    "assumptions": ["Initial content can be adapted from curated educational materials."],
+    "open_questions": ["Which age segment shows the fastest learning retention?"]
+  },
+  "research_report": {
+    "research_findings": [
+      "Parents are primary buyers and strongly value clear milestone visibility plus evidence that screen time converts into practical coding skills.",
+      "Children aged 6-12 churn quickly when setup is heavy or lessons are either too game-like (no real code) or too academic (too dense).",
+      "Retention improves with short mission loops, scaffolded hints, and parent-aware progress updates when learners get stuck.",
+      "Kids coding products increasingly use subscription-first pricing (roughly $5-$15/month), with retention past month two as a structural requirement.",
+      "For under-13 users, COPPA-style compliance must be explicit in PRD language: parental consent, data minimization, and deletion workflow."
+    ],
+    "goal_status": [
+      {
+        "goal_id": "G1",
+        "status": "satisfied",
+        "resolved_answers": [
+          "Parents need lightweight weekly progress summaries that show concrete learning outcomes, not just app usage.",
+          "Kids engage longer when missions are short, progressive, and provide accomplishment without giving away answers too early."
+        ]
+      },
+      {
+        "goal_id": "G2",
+        "status": "satisfied",
+        "resolved_answers": [
+          "Major free coding platforms set high baseline expectations, so differentiation should focus on parent dashboard clarity and age-banded real-code learning paths."
+        ]
+      },
+      {
+        "goal_id": "G4",
+        "status": "partially_satisfied",
+        "resolved_answers": [
+          "Compliance requirements should be explicit: no behavioral ads to under-13 users, verifiable parental consent, and parent-requested data deletion workflow."
+        ]
+      },
+      {
+        "goal_id": "G5",
+        "status": "partially_satisfied",
+        "resolved_answers": [
+          "Tiered family subscriptions and annual discounting are common, but willingness-to-pay varies by segment and region."
+        ]
+      }
+    ],
+    "unresolved_gaps": [
+      {
+        "gap": "Precise willingness-to-pay distribution across regions and age-segment households is still unclear.",
+        "related_goal_id": "G5",
+        "reason": "Existing evidence is directional but not segmented enough for pricing decisions."
+      },
+      {
+        "gap": "Optimal mission duration and difficulty cadence for ages 6-9 vs 10-12 needs tighter quantitative validation.",
+        "related_goal_id": "G1",
+        "reason": "Current findings are qualitative and should be validated with product telemetry."
+      },
+      {
+        "gap": "Cross-region compliance mapping beyond COPPA baseline (e.g., GDPR-K/UK AADC) needs implementation-level detail.",
+        "related_goal_id": "G4",
+        "reason": "Current inputs identify obligations but not full rollout checklist by market."
+      }
+    ]
+  }
+}

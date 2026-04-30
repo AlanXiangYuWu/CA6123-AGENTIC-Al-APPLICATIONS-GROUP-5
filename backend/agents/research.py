@@ -8,6 +8,7 @@ from typing import TypedDict
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langgraph.graph import END, START, StateGraph
 
+from backend.core.config import get_settings
 from backend.core.state import ProjectState, append_trace
 from backend.agents.web_research_agent import run_web_research_agent
 from backend.llm.gemini import get_llm
@@ -15,6 +16,8 @@ from backend.rag.kb import get_kb
 from backend.tools.web_search import web_search
 from backend.utils.json_parse import extract_json
 from backend.utils.debug_logger import log_llm_call_end, log_llm_call_start, log_step
+
+_SETTINGS = get_settings()
 
 REQUIRED_BRIEF_FIELDS: list[str] = [
     "product_name",
@@ -308,7 +311,7 @@ def generate_plan_and_queries(project_brief: dict) -> tuple[dict, list[dict], bo
         log_llm_call_start(
             "plan_and_query_generation",
             {
-                "provider": "gemini",
+                "provider": _SETTINGS.llm_provider,
                 "brief_keys": sorted(list(project_brief.keys())) if isinstance(project_brief, dict) else [],
             },
         )

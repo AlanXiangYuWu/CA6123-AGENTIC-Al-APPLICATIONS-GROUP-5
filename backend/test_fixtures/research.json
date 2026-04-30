@@ -1,0 +1,31 @@
+{
+  "module": "research",
+  "project_brief": {
+    "product_name": "Kids Coding Companion (Python Missions)",
+    "one_sentence_summary": "An educational coding app for kids (6-12) that teaches Python through game-like missions.",
+    "target_users": ["Parents (buyers)", "Kids (learners)"],
+    "user_scenario": "A parent wants structured coding learning for their 6-12-year-old with visible progress.",
+    "core_problem": "Kids struggle to sustain learning motivation and parents lack clear milestones.",
+    "proposed_solution": "A mission-based Python learning journey with daily progress, guided challenges, and parent-friendly dashboards.",
+    "must_have_features": [
+      "Mission progression with checkpoints",
+      "Age-appropriate Python learning content"
+    ],
+    "nice_to_have_features": ["Adaptive hints", "Community showcases"],
+    "platform": "Mobile + Web (progress dashboard)",
+    "business_model": "Subscription with tiered plans for families",
+    "constraints": {
+      "budget": "Tight initial budget (MVP in 6-8 weeks).",
+      "timeline": "MVP in 6-8 weeks; iterate after initial learning retention tests.",
+      "region": "Global / English-first",
+      "compliance": ["COPPA-style child privacy considerations"]
+    },
+    "success_criteria": [
+      "Day-7 retention",
+      "Lessons completed per week",
+      "Parent satisfaction surveys"
+    ],
+    "assumptions": ["Initial content can be adapted from curated educational materials."],
+    "open_questions": ["Which age segment shows the fastest learning retention?"]
+  }
+}
