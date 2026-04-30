@@ -42,7 +42,7 @@ function statusOf(id, trace, running) {
       {{ n.label }}
 
       <button
-        v-if="testMode && activeAgent === n.id && n.id === 'research'"
+        v-if="testMode && activeAgent === n.id && ['research', 'product'].includes(n.id)"
         class="node-test-start"
         @click.stop="emit('test-start', n.id)"
         aria-label="Start module test"

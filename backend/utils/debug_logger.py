@@ -16,6 +16,11 @@ _run_id_var: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar(
     default=None,
 )
 
+_log_prefix_var: contextvars.ContextVar[str] = contextvars.ContextVar(
+    "debug_logger_log_prefix",
+    default="research",
+)
+
 
 def _project_root() -> Path:
     # backend/utils/debug_logger.py -> backend/utils -> backend -> project root
@@ -26,17 +31,26 @@ def _ensure_parent_dir(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
 
-def set_log_buffer(buf: list[str]) -> contextvars.Token:
+def set_log_buffer(buf: list[str], *, log_prefix: str = "research") -> contextvars.Token:
     """Set a per-request in-memory buffer for debug lines."""
     run_id = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     buf_token = _buffer_var.set(buf)
     run_token = _run_id_var.set(run_id)
+    prefix = (log_prefix or "research").strip().lower().replace(" ", "_")
+    prefix_token = _log_prefix_var.set(prefix)
     # Return a combined token object so caller can reset both vars.
-    return (buf_token, run_token)  # type: ignore[return-value]
+    return (buf_token, run_token, prefix_token)  # type: ignore[return-value]
 
 
 def reset_log_buffer(token: Any) -> None:
+    if isinstance(token, tuple) and len(token) == 3:
+        buf_token, run_token, prefix_token = token
+        _buffer_var.reset(buf_token)
+        _run_id_var.reset(run_token)
+        _log_prefix_var.reset(prefix_token)
+        return
     if isinstance(token, tuple) and len(token) == 2:
+        # Backward compatibility with older 2-token callers.
         buf_token, run_token = token
         _buffer_var.reset(buf_token)
         _run_id_var.reset(run_token)
@@ -114,7 +128,7 @@ def _write_artifact_markdown(path: Path, record: dict[str, Any]) -> None:
 def log_step(step: str, payload: Any, *, level: str = "INFO") -> None:
     """
     Log an intermediate step.
-    - Always append to `.logs/research_steps_<timestamp>.jsonl`.
+    - Always append to `.logs/<prefix>_steps_<timestamp>.jsonl`.
     - If a buffer is set via `set_log_buffer`, also append a human-readable line.
     """
     ts = _dt.datetime.now().isoformat(timespec="seconds")
@@ -128,8 +142,9 @@ def log_step(step: str, payload: Any, *, level: str = "INFO") -> None:
     run_id = _run_id_var.get()
     if not run_id:
         run_id = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-    path_jsonl = root / ".logs" / f"research_steps_{run_id}.jsonl"
-    path_pretty = root / ".logs" / f"research_steps_{run_id}.pretty.json"
+    log_prefix = _log_prefix_var.get() or "research"
+    path_jsonl = root / ".logs" / f"{log_prefix}_steps_{run_id}.jsonl"
+    path_pretty = root / ".logs" / f"{log_prefix}_steps_{run_id}.pretty.json"
     record = {"ts": ts, "level": level, "step": step, "payload": payload}
     try:
         _write_jsonl(path_jsonl, record)
@@ -139,18 +154,19 @@ def log_step(step: str, payload: Any, *, level: str = "INFO") -> None:
         pass
 
 
-def log_artifact(artifact_name: str, payload: Any) -> None:
+def log_artifact(artifact_name: str, payload: Any, *, file_prefix: str = "artifacts") -> None:
     """
     Log artifacts (final structured outputs) to one file.
-    Writes to `.logs/artifacts_<timestamp>.json` (pretty-printed).
+    Writes to `.logs/<file_prefix>_<timestamp>.json` (pretty-printed).
     """
     ts = _dt.datetime.now().isoformat(timespec="seconds")
     root = _project_root()
     run_id = _run_id_var.get()
     if not run_id:
         run_id = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-    path_json = root / ".logs" / f"artifacts_{run_id}.json"
-    path_md = root / ".logs" / f"artifacts_{run_id}.md"
+    safe_prefix = (file_prefix or "artifacts").strip().lower().replace(" ", "_")
+    path_json = root / ".logs" / f"{safe_prefix}_{run_id}.json"
+    path_md = root / ".logs" / f"{safe_prefix}_{run_id}.md"
     record = {"ts": ts, "artifact_name": artifact_name, "payload": payload}
     try:
         _append_pretty_json(path_json, record)

@@ -31,19 +31,37 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def load_export(path: Path) -> tuple[str, list[dict[str, Any]]]:
+def load_export(path: Path) -> list[tuple[str, list[dict[str, Any]]]]:
     obj = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(obj, dict) or "data" not in obj:
         raise ValueError("Invalid export format: expected top-level object with key 'data'.")
-    rows = obj["data"]
-    if not isinstance(rows, list):
-        raise ValueError("This importer expects single-collection export where data is a list.")
+    data = obj["data"]
     meta = obj.get("meta", {})
     cols = meta.get("collections", []) if isinstance(meta, dict) else []
     src_collection = cols[0] if cols else ""
-    if not rows:
-        raise ValueError("Export file contains 0 rows.")
-    return src_collection, rows
+
+    # Single-collection export format: {"data": [ ...rows... ]}
+    if isinstance(data, list):
+        if not data:
+            raise ValueError("Export file contains 0 rows.")
+        return [(src_collection, data)]
+
+    # Multi-collection export format: {"data": {"coll_a": [...], "coll_b": [...]}}
+    if isinstance(data, dict):
+        pairs: list[tuple[str, list[dict[str, Any]]]] = []
+        for name, rows in data.items():
+            if not isinstance(name, str) or not name.strip():
+                continue
+            if not isinstance(rows, list):
+                raise ValueError(f"Invalid rows for collection {name!r}: expected list.")
+            if not rows:
+                continue
+            pairs.append((name.strip(), rows))
+        if not pairs:
+            raise ValueError("Export file contains no non-empty collection rows.")
+        return pairs
+
+    raise ValueError("Invalid export format: data must be list or object.")
 
 
 def get_dim(rows: list[dict[str, Any]]) -> int:
@@ -105,31 +123,54 @@ def _extract_vector_dim(collection_info: dict[str, Any]) -> int | None:
 
 
 def import_rows(client: MilvusClient, collection: str, rows: list[dict[str, Any]], batch_size: int) -> None:
+    def _normalize_row(row: dict[str, Any]) -> dict[str, Any]:
+        # source_path can be absent in redacted exports; keep schema-compatible default.
+        out = dict(row)
+        out["source_path"] = str(out.get("source_path", "") or "")
+        # Keep string fields stable for Milvus VARCHAR schema.
+        out["doc_id"] = str(out.get("doc_id", "") or "")
+        out["kb_type"] = str(out.get("kb_type", "") or "")
+        out["text"] = str(out.get("text", "") or "")
+        return out
+
+    normalized_rows = [_normalize_row(r) for r in rows]
     total = len(rows)
     for start in range(0, total, batch_size):
         end = min(start + batch_size, total)
-        client.insert(collection_name=collection, data=rows[start:end])
+        client.insert(collection_name=collection, data=normalized_rows[start:end])
         print(f"inserted {end}/{total}")
     client.flush(collection_name=collection)
 
 
 def main() -> None:
     args = parse_args()
-    src_collection, rows = load_export(args.input.resolve())
-    target_collection = args.collection or src_collection
-    if not target_collection:
-        raise SystemExit("No collection name available. Pass --collection explicitly.")
-
-    dim = get_dim(rows)
     client = MilvusClient(uri=args.uri)
-    ensure_collection(
-        client=client,
-        name=target_collection,
-        dim=dim,
-        recreate=args.recreate_if_dim_mismatch,
-    )
-    import_rows(client, target_collection, rows, args.batch_size)
-    print(f"Import complete: {target_collection} ({len(rows)} rows, dim={dim})")
+    exports = load_export(args.input.resolve())
+
+    # Backward-compatible override for single-collection imports only.
+    if args.collection and len(exports) > 1:
+        raise SystemExit(
+            "--collection override is only supported for single-collection exports. "
+            "For multi-collection exports, remove --collection and keep original names."
+        )
+
+    imported = []
+    for src_collection, rows in exports:
+        target_collection = args.collection or src_collection
+        if not target_collection:
+            raise SystemExit("No collection name available. Pass --collection explicitly.")
+        dim = get_dim(rows)
+        ensure_collection(
+            client=client,
+            name=target_collection,
+            dim=dim,
+            recreate=args.recreate_if_dim_mismatch,
+        )
+        import_rows(client, target_collection, rows, args.batch_size)
+        imported.append((target_collection, len(rows), dim))
+        print(f"Import complete: {target_collection} ({len(rows)} rows, dim={dim})")
+
+    print(f"Imported {len(imported)} collection(s) from: {args.input.resolve()}")
 
 
 if __name__ == "__main__":

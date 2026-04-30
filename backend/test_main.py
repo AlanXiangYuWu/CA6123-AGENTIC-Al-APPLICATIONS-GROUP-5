@@ -9,10 +9,13 @@ Run:
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, FastAPI
 
+from backend.agents.product import product_agent
 from backend.agents.research import research_agent
 from backend.core.state import initial_state
 from backend.rag.kb import configure_kb_collections, get_kb_runtime_status
@@ -23,33 +26,17 @@ test_router = APIRouter()
 app = FastAPI(title="CA6123 Module Test Server", version="0.1.0")
 app.include_router(test_router)
 
+_FIXTURE_DIR = Path(__file__).resolve().parent / "test_fixtures"
 
-def _default_research_project_brief() -> dict[str, Any]:
-    # Deterministic, requirement-aligned input for unit-testing research_agent.
-    return {
-        "product_name": "Kids Coding Companion (Python Missions)",
-        "one_sentence_summary": "An educational coding app for kids (6–12) that teaches Python through game-like missions.",
-        "target_users": ["Parents (buyers)", "Kids (learners)"],
-        "user_scenario": "A parent wants structured coding learning for their 6–12-year-old with visible progress.",
-        "core_problem": "Kids struggle to sustain learning motivation and parents lack clear milestones.",
-        "proposed_solution": "A mission-based Python learning journey with daily progress, guided challenges, and parent-friendly dashboards.",
-        "must_have_features": [
-            "Mission progression with checkpoints",
-            "Age-appropriate Python learning content",
-        ],
-        "nice_to_have_features": ["Adaptive hints", "Community showcases"],
-        "platform": "Mobile + Web (progress dashboard)",
-        "business_model": "Subscription with tiered plans for families",
-        "constraints": {
-            "budget": "Tight initial budget (MVP in 6–8 weeks).",
-            "timeline": "MVP in 6–8 weeks; iterate after initial learning retention tests.",
-            "region": "Global / English-first",
-            "compliance": ["COPPA-style child privacy considerations"],
-        },
-        "success_criteria": ["Day-7 retention", "Lessons completed per week", "Parent satisfaction surveys"],
-        "assumptions": ["Initial content can be adapted from curated educational materials."],
-        "open_questions": ["Which age segment shows the fastest learning retention?"],
-    }
+def _load_module_fixture(module: str) -> dict[str, Any]:
+    fixture_path = _FIXTURE_DIR / f"{module}.json"
+    if not fixture_path.exists():
+        raise FileNotFoundError(f"Fixture file not found: {fixture_path}")
+    with fixture_path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        raise ValueError(f"Fixture must be a JSON object: {fixture_path}")
+    return data
 
 
 @test_router.get("/api-test/health")
@@ -60,9 +47,17 @@ def health() -> dict[str, Any]:
 @test_router.get("/api-test/test/default-input")
 def get_default_input(module: str = "research") -> dict[str, Any]:
     m = (module or "").strip().lower()
-    if m == "research":
-        return {"module": "research", "project_brief": _default_research_project_brief()}
-    return {"error": f"Unsupported module for default input: {m}"}  # type: ignore[return-value]
+    if m not in {"research", "product"}:
+        return {"error": f"Unsupported module for default input: {m}"}  # type: ignore[return-value]
+    try:
+        fixture = _load_module_fixture(m)
+    except Exception as exc:
+        return {"error": f"Failed to load fixture for module '{m}': {exc}"}  # type: ignore[return-value]
+    return {
+        "module": m,
+        "project_brief": fixture.get("project_brief"),
+        "research_report": fixture.get("research_report"),
+    }
 
 
 @test_router.get("/api-test/rag/collections")
@@ -92,8 +87,14 @@ def run_module_test(payload: dict[str, Any]) -> dict[str, Any]:
     if not module:
         return {"error": "Missing 'module' field. Example: {\"module\":\"research\"}"}  # type: ignore[return-value]
 
-    # System-prepared inputs.
-    project_brief = payload.get("project_brief") or _default_research_project_brief()
+    try:
+        fixture = _load_module_fixture(module)
+    except Exception as exc:
+        return {"error": f"Failed to load fixture for module '{module}': {exc}"}  # type: ignore[return-value]
+
+    # System-prepared inputs from fixture, optionally overridden by payload.
+    project_brief = payload.get("project_brief") or fixture.get("project_brief") or {}
+    research_report = payload.get("research_report") or fixture.get("research_report") or {}
 
     state = initial_state(user_idea="__unit_test__")
     state["project_brief"] = project_brief
@@ -103,12 +104,21 @@ def run_module_test(payload: dict[str, Any]) -> dict[str, Any]:
 
     if module == "research":
         debug_logs: list[str] = []
-        token = set_log_buffer(debug_logs)
+        token = set_log_buffer(debug_logs, log_prefix=module)
         try:
             update = research_agent(state)
         finally:
             reset_log_buffer(token)
         # Merge update back into a snapshot-like output.
+        state.update(update)
+    elif module == "product":
+        state["research_report"] = research_report if isinstance(research_report, dict) else {}
+        debug_logs = []
+        token = set_log_buffer(debug_logs, log_prefix=module)
+        try:
+            update = product_agent(state)
+        finally:
+            reset_log_buffer(token)
         state.update(update)
     else:
         return {"error": f"Unsupported module: {module}"}  # type: ignore[return-value]
@@ -121,10 +131,12 @@ def run_module_test(payload: dict[str, Any]) -> dict[str, Any]:
             "thread_id": "unit_test_" + module,
             "project_brief": state.get("project_brief"),
             "research_report": state.get("research_report"),
+            "prd": state.get("prd"),
             "citations": state.get("citations", []),
             "guardrail_flags": state.get("guardrail_flags", []),
             "trace": state.get("trace", []),
         },
+        file_prefix=f"{module}_artifacts",
     )
 
     return {
@@ -133,8 +145,9 @@ def run_module_test(payload: dict[str, Any]) -> dict[str, Any]:
         "revision_round": state.get("revision_round", 0),
         "project_brief": state.get("project_brief"),
         "research_report": state.get("research_report"),
+        "prd": state.get("prd"),
         "citations": state.get("citations", []),
         "guardrail_flags": state.get("guardrail_flags", []),
-        "debug_logs": debug_logs if module == "research" else [],
+        "debug_logs": debug_logs,
     }
 

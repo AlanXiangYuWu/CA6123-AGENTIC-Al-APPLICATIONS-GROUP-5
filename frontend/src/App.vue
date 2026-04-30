@@ -1,12 +1,12 @@
 <script setup>
 import { ref, reactive, onMounted, computed, watch } from 'vue'
-import PipelineView from './components/PipelineView.vue'
 import IdeaPanel from './components/IdeaPanel.vue'
 import CustomerPanel from './components/CustomerPanel.vue'
 import AgentOutputPanel from './components/AgentOutputPanel.vue'
 import ArtifactsPanel from './components/ArtifactsPanel.vue'
 import LogPanel from './components/LogPanel.vue'
-import { checkHealth, streamRun, testModule, fetchDefaultTestInput } from './api.js'
+import TestingPipelinePanel from './components/TestingPipelinePanel.vue'
+import { checkHealth, streamRun } from './api.js'
 
 const idea = ref(
   'I want to build an AI coding companion app for kids aged 6-12 that teaches Python through gamified missions. Please produce a full plan.',
@@ -125,24 +125,6 @@ function reset() {
   customerChatStatus.value = 'idle'
   seenCustomerQuestions.clear()
   lastLoggedBrief = ''
-}
-
-async function setMode(nextTestMode) {
-  testMode.value = nextTestMode
-  reset()
-  if (testMode.value) {
-    selectedAgent.value = 'research'
-    state.research_report = null
-    state.project_brief = null
-    state.running = ''
-    try {
-      const res = await fetchDefaultTestInput('research')
-      if (res?.project_brief) state.project_brief = res.project_brief
-      if (res?.project_brief) pushLog('Default research input loaded.')
-    } catch (e) {
-      pushLog(`ERROR: failed to load default test input: ${e?.message || String(e)}`)
-    }
-  }
 }
 
 watch(customerStageClosed, (closed) => {
@@ -277,54 +259,6 @@ function executeRun(userMessage, fresh = false) {
   }, state.thread_id)
 }
 
-async function testSelectedModule() {
-  if (busy.value) return
-  // Only support module testing in current MVP for 'research'
-  if (selectedAgent.value !== 'research') {
-    pushLog('Module test MVP currently supports only: research')
-    return
-  }
-  busy.value = true
-  selectedAgent.value = 'research'
-  state.running = 'research'
-
-  // Keep state.project_brief (default input) loaded by setMode().
-  // Only clear outputs related to this module test.
-  state.trace = []
-  state.research_report = null
-  state.prd = null
-  state.tech_design = null
-  state.code_artifact = null
-  state.qa_report = null
-  state.final_package = null
-  state.guardrail_flags = []
-  state.citations = []
-  state.revision_round = 0
-  log.value = []
-
-  try {
-    const res = await testModule('research')
-    if (Array.isArray(res.debug_logs)) {
-      // Replace log panel content with structured step logs.
-      log.value = res.debug_logs
-    }
-    if (res.trace) state.trace = res.trace
-    if (res.project_brief) state.project_brief = res.project_brief
-    if (res.research_report) state.research_report = res.research_report
-    if (Array.isArray(res.citations) && res.citations.length) state.citations = res.citations
-    if (Array.isArray(res.guardrail_flags) && res.guardrail_flags.length) state.guardrail_flags = res.guardrail_flags
-    state.revision_round = res.revision_round || 0
-    state.running = ''
-    busy.value = false
-    selectedAgent.value = 'research'
-    // Finished log is optional; intermediate steps are shown above.
-  } catch (e) {
-    pushLog(`ERROR: ${e?.message || String(e)}`)
-    busy.value = false
-    state.running = ''
-  }
-}
-
 function run() {
   executeRun(idea.value, true)
 }
@@ -340,14 +274,8 @@ function selectAgent(agentId) {
   selectedAgent.value = agentId
 }
 
-async function onTestStart(agentId) {
-  if (!testMode.value) return
-  // MVP supports research-only tests.
-  if (agentId !== 'research') {
-    pushLog('Module test MVP currently supports only: research')
-    return
-  }
-  await testSelectedModule()
+function replaceLog(lines) {
+  log.value = Array.isArray(lines) ? lines : []
 }
 
 function downloadFinal() {
@@ -389,13 +317,20 @@ onMounted(async () => {
       <span class="tag" v-if="health">model: {{ health.model }} · {{ health.status }}</span>
     </h1>
 
-    <div class="panel" style="margin-top: 12px">
-      <h2 style="margin: 0 0 10px 0">Mode</h2>
-      <label style="display:flex;gap:10px;align-items:center;">
-        <input type="checkbox" v-model="testMode" @change="setMode($event.target.checked)" />
-        <span>Test mode (run selected agent in isolation)</span>
-      </label>
-    </div>
+    <TestingPipelinePanel
+      :trace="state.trace"
+      :running="state.running"
+      :selected-agent="selectedAgent"
+      :test-mode="testMode"
+      :busy="busy"
+      :state="state"
+      :push-log="pushLog"
+      :reset-app="reset"
+      @update:selected-agent="selectAgent"
+      @update:test-mode="testMode = $event"
+      @update:busy="busy = $event"
+      @replace-log="replaceLog"
+    />
 
     <IdeaPanel
       :idea="idea"
@@ -406,21 +341,6 @@ onMounted(async () => {
       @run="run"
       :run-disabled="testMode"
     />
-
-    <div class="panel">
-      <h2>Pipeline</h2>
-      <div class="pipeline-hint">
-        Click any agent card to view its dedicated panel.
-      </div>
-      <PipelineView
-        :trace="state.trace"
-        :running="state.running"
-        :active-agent="selectedAgent"
-        :test-mode="testMode"
-        @select="selectAgent"
-        @test-start="onTestStart"
-      />
-    </div>
 
     <CustomerPanel
       v-if="selectedAgent === 'customer'"

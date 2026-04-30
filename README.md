@@ -19,7 +19,7 @@
 
 | 成员 (按姓名拉丁字母排序) | 主要职责 |
 |---|---|
-| **王欣怡** Wang Xinyi | Agent编排设计 / RAG实现 / Customer Agent |
+| **王欣怡** Wang Xinyi | Agent编排设计 / Milvus向量数据库构建 / Customer·Research·Product Agent完整实现 / 联网搜索Agent |
 | **温晏瑜** Wen Yanyu | 产品设计 · 结构设计 · 前端页面设计 / RAG数据集构建 |
 | **武翔宇** Wu Xiangyu | 初版Demo实现 / Guardrails / 前后端设计 / LoRA模型微调|
 
